@@ -1,0 +1,34 @@
+const int ldrPin = A0;  // LDR pinini tanımlayın (Analog giriş olarak ayarlandı)
+const int ledPin = 3;   // LED'in bağlı olduğu pin (3. pin)
+
+int ldrValue;           // LDR'den okunan değeri saklamak için değişken
+int threshold = 500;    // Dokunmatik buton olarak kabul edilecek LDR değeri
+
+bool buttonState = false;  // Butonun durumunu (açık/kapalı) saklamak için değişken
+bool lastButtonState = false;  // Son buton durumunu saklamak için değişken
+
+void setup() {
+  pinMode(ledPin, OUTPUT);  // LED pinini çıkış olarak ayarla
+  Serial.begin(9600);       // Seri haberleşmeyi başlat
+}
+
+void loop() {
+  ldrValue = analogRead(ldrPin);  // LDR'den değeri oku
+  Serial.println(ldrValue);       // Okunan değeri seri monitöre yazdır (isteğe bağlı)
+
+  // LDR değeri belirlenen eşik değerinden küçükse, buton durumunu güncelle
+  if (ldrValue < threshold) {
+    buttonState = !lastButtonState;
+    delay(200);  // Gürültüyü önlemek için kısa bir bekleme ekle
+  }
+
+  // Buton durumu değiştiyse, LED'in durumunu güncelle
+  if (buttonState != lastButtonState) {
+    if (buttonState) {
+      digitalWrite(ledPin, !digitalRead(ledPin));  // LED durumunu tersine çevir
+    }
+    delay(200);  // Gürültüyü önlemek için kısa bir bekleme ekle
+  }
+
+  lastButtonState = buttonState;  // Buton durumunu güncelle
+}
